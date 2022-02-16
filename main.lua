@@ -5,6 +5,14 @@ function love.load()
   local tiles_w = tiles:getWidth()
   local tiles_h = tiles:getHeight()
 
+  --important tiles names
+  floor = 13
+  light = 11
+  spikes = 10
+  chest = 15
+  stairs = 4
+  door = 3
+
   hero = {
     spr = love.graphics.newImage("res/sprites/hero.png"),
     x=5,
@@ -100,23 +108,34 @@ function playerInput()
         y = y + 1
     end
 
-    if isFloor(x,y) then
-      hero.x = x
-      hero.y = y
-      hero.talk = false
-    else 
-      hero.talk = true
-      hero.text = "I can't walk there"
-    end
+    test(x,y)
   end
 end
 
-function isFloor(x,y)
-  return map1[y][x] == 13
-end
 
 function talk()
   if hero.talk == true then
     love.graphics.print(hero.text,8*16,20*16)
   end
 end
+
+function test(x,y)
+  local map = map1[y][x]
+  if map ~= floor then
+    hero.talk = true
+  end
+  if map == floor then
+    hero.x = x
+    hero.y = y
+    hero.talk = false
+  elseif map == spikes then
+    hero.x = x
+    hero.y = y
+    hero.text = "ouch!"
+  elseif map == 3 then
+    hero.text = "I can't go back yet!"
+  elseif map == light then
+    hero.text = "shiny!"
+  end
+end
+
