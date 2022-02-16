@@ -12,6 +12,8 @@ function love.load()
     w=16,
     h=16,
     speed = 16,
+    talk = false,
+    text = "hi",
   }
 
   w = (tiles_w/5)-1
@@ -39,7 +41,7 @@ function love.load()
         {12, 13, 13, 13, 13, 13, 13, 13, 13, 13, 10, 13, 13, 15, 13, 14, 0, 0, 0},
         {12, 13, 13, 13, 13, 13, 13, 13, 13, 13, 10, 13, 13, 13, 13, 14, 0, 0, 0},
         {12, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 10, 10, 10, 10, 20, 8, 8, 9},
-        {12, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 6, 14},
+        {12, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 14},
         {12, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11, 13, 14},
         {12, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 14},
         {12, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 14},
@@ -63,9 +65,10 @@ function love.draw()
   --draw Player
   love.graphics.draw(hero.spr, hero.x * w, hero.y * h)
 
+  talk()
   --test
-  love.graphics.print(hero.x,0,0)
-  love.graphics.print(hero.y,0,10)
+  -- love.graphics.print(hero.x,0,0)
+  -- love.graphics.print(hero.y,0,10)
   
 end
 
@@ -84,14 +87,36 @@ end
 
 function playerInput()
   function love.keypressed(key)
+    local x = hero.x
+    local y = hero.y
+
     if key == "a" then
-        hero.x = hero.x - 1
+        x = x - 1
     elseif key == "d" then
-        hero.x = hero.x + 1
+        x = x + 1
     elseif key == "w" then
-        hero.y = hero.y - 1
+        y = y - 1
     elseif key == "s" then
-        hero.y = hero.y + 1
+        y = y + 1
     end
+
+    if isFloor(x,y) then
+      hero.x = x
+      hero.y = y
+      hero.talk = false
+    else 
+      hero.talk = true
+      hero.text = "I can't walk there"
+    end
+  end
+end
+
+function isFloor(x,y)
+  return map1[y][x] == 13
+end
+
+function talk()
+  if hero.talk == true then
+    love.graphics.print(hero.text,8*16,20*16)
   end
 end
