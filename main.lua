@@ -22,10 +22,15 @@ function love.load()
     speed = 16,
     talk = false,
     text = "hi",
+    --game objects
+    key = 1,
   }
 
   w = (tiles_w/5)-1
   h = (tiles_h/4) -1
+
+  --others
+  animTimer = 100
 
 
   --quads
@@ -64,11 +69,13 @@ end
 
 function love.update(dt)
   playerInput()
+  animTiles()
 end
 
 
 function love.draw()
   drawMap()
+
 
   --draw Player
   love.graphics.draw(hero.spr, hero.x * w, hero.y * h)
@@ -77,7 +84,7 @@ function love.draw()
   --test
   -- love.graphics.print(hero.x,0,0)
   -- love.graphics.print(hero.y,0,10)
-  
+
 end
 
 
@@ -128,6 +135,8 @@ function test(x,y)
     hero.x = x
     hero.y = y
     hero.talk = false
+  elseif map == 8 or map == 14 or map == 18 or map == 12 or map == 20  then
+    hero.talk =false
   elseif map == spikes then
     hero.x = x
     hero.y = y
@@ -136,6 +145,29 @@ function test(x,y)
     hero.text = "I can't go back yet!"
   elseif map == light then
     hero.text = "shiny!"
+  elseif map == 15 then
+    if hero.key == 0 then
+      hero.text = "i need the key..."
+    else
+      hero.text = "Where it go!?"
+      hero.key = hero.key - 1
+      map1[y][x] = floor
+    end
+  end
+end
+
+
+function animTiles()
+  if animTimer > 0 then
+    animTimer = animTimer - 1
+  end
+  if animTimer <= 0 then
+    animTimer = love.math.random(20,40)
+    if map1[3][3] == 11 then
+      map1[3][3] = 6
+    else
+      map1[3][3] = 11
+    end
   end
 end
 
