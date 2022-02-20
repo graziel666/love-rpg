@@ -1,5 +1,6 @@
 function love.load()
-
+  
+  
   tiles = love.graphics.newImage("res/sprites/floor.png")
 
   local tiles_w = tiles:getWidth()
@@ -7,7 +8,8 @@ function love.load()
 
   --important tiles names
   floor = 13
-  light = 11
+  torch1 = 11
+  torch2 = 6
   spikes = 10
   chest = 15
   stairs = 4
@@ -31,6 +33,8 @@ function love.load()
 
   --others
   animTimer = 100
+  map_x = 0
+  map_y = 0
 
 
   --quads
@@ -46,7 +50,7 @@ function love.load()
   map1 = {
         {7, 8, 8, 8, 3, 8, 8, 8, 8, 8, 9, 0, 0, 0, 0, 0, 0, 0, 0},
         {12, 13, 13, 13, 13, 13, 13, 13, 13, 13, 14, 0, 0, 0, 0, 0, 0, 0, 0},
-        {12, 13, 11, 13, 13, 13, 13, 13, 11, 13, 14, 0, 0, 0, 0, 0, 0, 0, 0},
+        {12, 13, 11, 13, 13, 13, 13, 13, 6, 13, 14, 0, 0, 0, 0, 0, 0, 0, 0},
         {12, 13, 13, 13, 13, 13, 13, 13, 13, 13, 14, 0, 0, 0, 0, 0, 0, 0, 0},
         {12, 13, 13, 13, 13, 13, 13, 13, 13, 13, 14, 0, 0, 0, 0, 0, 0, 0, 0},
         {12, 13, 13, 13, 13, 13, 13, 13, 13, 13, 20, 8, 8, 8, 8, 9, 0, 0, 0},
@@ -60,7 +64,7 @@ function love.load()
         {12, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 14},
         {12, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 14},
         {12, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 14},
-        {12, 13, 11, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 4, 13, 14},
+        {12, 13, 6, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 4, 13, 14},
         {12, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 14},
         {17, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 19}
         }
@@ -69,7 +73,6 @@ end
 
 function love.update(dt)
   playerInput()
-  animTiles()
 end
 
 
@@ -79,11 +82,13 @@ function love.draw()
 
   --draw Player
   love.graphics.draw(hero.spr, hero.x * w, hero.y * h)
-
+  --
+  
   talk()
   --test
   -- love.graphics.print(hero.x,0,0)
   -- love.graphics.print(hero.y,0,10)
+  -- love.graphics.print(animTimer,0,0)
 
 end
 
@@ -91,9 +96,10 @@ end
 function drawMap()
   for i, row in ipairs(map1) do
     for j, tile in ipairs(row) do
-      if tile ~=0 then
+      if tile ~=0   then
         love.graphics.draw(tiles, quad[tile], j * w, i * h)
       end
+     animTiles(tile,j,i)
     end
   end
 end
@@ -143,7 +149,7 @@ function test(x,y)
     hero.text = "ouch!"
   elseif map == 3 then
     hero.text = "I can't go back yet!"
-  elseif map == light then
+  elseif map == torch1 or map == torch2 then
     hero.text = "shiny!"
   elseif map == 15 then
     if hero.key == 0 then
@@ -157,17 +163,33 @@ function test(x,y)
 end
 
 
-function animTiles()
+function animTiles(tile,j,i)
+  -- love.graphics.print(torch1,0,10)
   if animTimer > 0 then
+
+    if tile == 11 then
+      love.graphics.draw(tiles, quad[torch1], j*w, i*h)
+    elseif tile == 6 then
+      love.graphics.draw(tiles,quad[torch2],j*w, i*h)
+    end
+
     animTimer = animTimer - 1
   end
+
   if animTimer <= 0 then
-    animTimer = love.math.random(20,40)
-    if map1[3][3] == 11 then
-      map1[3][3] = 6
-    else
-      map1[3][3] = 11
+    if torch1 == 6 then
+      torch1 = 11
+    elseif torch1 == 11 then
+      torch1 = 6
     end
+
+    if torch2 == 11 then
+      torch2 = 6
+    elseif torch2 == 6 then
+      torch2 = 11
+    end
+
+    animTimer = love.math.random(16500,18800)
   end
 end
 
